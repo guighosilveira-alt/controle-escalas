@@ -1,0 +1,644 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestor de Escalas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .screen {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .screen.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Animações e badges da tabela */
+        .badge-t {
+            background-color: #dcfce7;
+            color: #15803d;
+            border: 1px solid #bbf7d0;
+        }
+
+        .badge-f {
+            background-color: #fee2e2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+        }
+
+        .cell-interactive {
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.1s ease, background-color 0.15s ease;
+        }
+
+        .cell-interactive:active {
+            transform: scale(0.92);
+        }
+
+        /* Scrollbar customizado */
+        ::-webkit-scrollbar {
+            height: 6px;
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
+
+    <!-- Tela Inicial / Welcome Screen -->
+    <div id="welcome-screen" class="screen active min-h-screen flex-col justify-center items-center p-4 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white">
+        <div class="glass-card p-8 md:p-10 rounded-2xl max-w-md w-full text-center shadow-2xl relative overflow-hidden">
+            <div class="absolute -right-10 -top-10 w-32 h-32 bg-blue-500/20 rounded-full blur-2xl"></div>
+            <div class="absolute -left-10 -bottom-10 w-32 h-32 bg-indigo-500/20 rounded-full blur-2xl"></div>
+
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-blue-600/30 text-blue-400 mb-6 border border-blue-400/30">
+                <i class="fa-solid fa-calendar-days text-3xl"></i>
+            </div>
+            
+            <h1 class="text-3xl font-extrabold tracking-tight mb-3">Gestor de Escalas</h1>
+            <p class="text-slate-300 text-sm mb-8 leading-relaxed">
+                Gerencie o dimensionamento, distribuição de folgas e regras operacionais da sua equipe de forma inteligente e intuitiva.
+            </p>
+            
+            <button id="btn-start" onclick="openApp()" class="w-full bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-semibold py-3.5 px-6 rounded-xl shadow-lg shadow-blue-600/30 transition duration-200 flex items-center justify-center gap-2 group">
+                <span>Acessar Painel</span>
+                <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+            </button>
+
+            <div class="mt-6 pt-6 border-t border-white/10 text-xs text-slate-400">
+                Criação e desenvolvimento: <span class="text-slate-200 font-medium">Rodrigo Silveira(011545287)</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tela Principal do Aplicativo -->
+    <div id="app-screen" class="screen min-h-screen flex-col w-full bg-slate-50">
+        
+        <!-- Navbar Header -->
+        <header class="bg-slate-900 text-white sticky top-0 z-30 shadow-md">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="bg-blue-600 p-2 rounded-lg text-white">
+                        <i class="fa-solid fa-users-gear text-lg"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-bold text-base sm:text-lg leading-tight">Gestor de Escalas</h2>
+                        <span class="text-xs text-slate-400">Painel Operacional 5x2</span>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <button onclick="exportToCSV()" title="Exportar para CSV" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-download text-xs"></i>
+                        <span class="hidden sm:inline">Exportar</span>
+                    </button>
+                    <button onclick="goHome()" class="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-right-from-bracket text-xs"></i>
+                        <span>Sair</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+            
+            <!-- Dashboard KPIs -->
+            <section class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div class="flex items-center justify-between text-slate-500 text-xs font-semibold uppercase tracking-wider mb-2">
+                        <span>Total Equipe</span>
+                        <i class="fa-solid fa-users text-blue-500 text-sm"></i>
+                    </div>
+                    <div class="flex items-baseline gap-2">
+                        <span id="total-colab" class="text-2xl sm:text-3xl font-extrabold text-slate-900">0</span>
+                        <span class="text-xs text-slate-400">colaboradores</span>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div class="flex items-center justify-between text-slate-500 text-xs font-semibold uppercase tracking-wider mb-2">
+                        <span>Meta Mín. Folgas</span>
+                        <i class="fa-solid fa-chart-line text-amber-500 text-sm"></i>
+                    </div>
+                    <div class="flex items-baseline gap-2">
+                        <span id="meta-min" class="text-2xl sm:text-3xl font-extrabold text-slate-900">0</span>
+                        <span class="text-xs text-slate-500 font-medium">/dia (20%)</span>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div class="flex items-center justify-between text-slate-500 text-xs font-semibold uppercase tracking-wider mb-2">
+                        <span>Meta Máx. Folgas</span>
+                        <i class="fa-solid fa-bullseye text-emerald-500 text-sm"></i>
+                    </div>
+                    <div class="flex items-baseline gap-2">
+                        <span id="meta-max" class="text-2xl sm:text-3xl font-extrabold text-slate-900">0</span>
+                        <span class="text-xs text-slate-500 font-medium">/dia (28.6%)</span>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div class="flex items-center justify-between text-slate-500 text-xs font-semibold uppercase tracking-wider mb-2">
+                        <span>Média Folgas/Dia</span>
+                        <i class="fa-solid fa-calculator text-indigo-500 text-sm"></i>
+                    </div>
+                    <div class="flex items-baseline gap-2">
+                        <span id="avg-folgas" class="text-2xl sm:text-3xl font-extrabold text-indigo-600">0.0</span>
+                        <span class="text-xs text-slate-400">folgas/dia</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Resumo Diário de Folgas -->
+            <section class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3 flex items-center gap-2">
+                    <i class="fa-solid fa-chart-simple text-blue-600"></i>
+                    <span>Distribuição Diária de Folgas</span>
+                </h4>
+                <div id="daily-summary" class="grid grid-cols-7 gap-1 sm:gap-2 text-center">
+                    <!-- Gerado dinamicamente -->
+                </div>
+            </section>
+
+            <!-- Controles, Busca e Filtros -->
+            <section class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-4">
+                <div class="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
+                    
+                    <!-- Campo de Busca -->
+                    <div class="relative flex-grow max-w-md">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <input type="text" id="search-input" onkeyup="filterTable()" placeholder="Buscar por colaborador ou matrícula..." class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                    </div>
+
+                    <!-- Filtros Rápidos -->
+                    <div class="flex flex-wrap items-center gap-2">
+                        <select id="day-filter" onchange="filterTable()" class="bg-slate-50 border border-slate-200 rounded-lg text-sm px-3 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+                            <option value="all">Todos os Dias</option>
+                            <option value="0">Segunda-feira</option>
+                            <option value="1">Terça-feira</option>
+                            <option value="2">Quarta-feira</option>
+                            <option value="3">Quinta-feira</option>
+                            <option value="4">Sexta-feira</option>
+                            <option value="5">Sábado</option>
+                            <option value="6">Domingo</option>
+                        </select>
+
+                        <select id="status-filter" onchange="filterTable()" class="bg-slate-50 border border-slate-200 rounded-lg text-sm px-3 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+                            <option value="all">Todos Status</option>
+                            <option value="F">Possui Folga no Dia Selecionado</option>
+                            <option value="T">Trabalha no Dia Selecionado</option>
+                        </select>
+
+                        <button onclick="openAddModal()" class="bg-blue-600 hover:bg-blue-700 text-white text-sm px-3 py-2 rounded-lg font-medium transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-plus text-xs"></i>
+                            <span>Novo</span>
+                        </button>
+                        
+                        <button onclick="resetData()" title="Restaurar padrão" class="bg-slate-100 hover:bg-slate-200 text-slate-600 border border-slate-200 text-sm px-3 py-2 rounded-lg transition">
+                            <i class="fa-solid fa-rotate-left"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between text-xs text-slate-500 pt-2 border-t border-slate-100">
+                    <span id="counter-info">Exibindo 0 colaboradores</span>
+                    <span class="hidden sm:inline text-slate-400"><i class="fa-solid fa-circle-info mr-1"></i>Clique na célula do dia para alternar entre Trabalhando (T) e Folga (F).</span>
+                </div>
+            </section>
+
+            <!-- Tabela Principal de Escala -->
+            <section class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table id="escala-table" class="w-full text-sm text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-600 border-b border-slate-200 text-xs font-semibold uppercase tracking-wider">
+                                <th scope="col" class="py-3 px-4 text-center w-16">ID</th>
+                                <th scope="col" class="py-3 px-4">Colaborador</th>
+                                <th scope="col" class="py-3 px-2 text-center w-14 sm:w-16">Seg</th>
+                                <th scope="col" class="py-3 px-2 text-center w-14 sm:w-16">Ter</th>
+                                <th scope="col" class="py-3 px-2 text-center w-14 sm:w-16">Qua</th>
+                                <th scope="col" class="py-3 px-2 text-center w-14 sm:w-16">Qui</th>
+                                <th scope="col" class="py-3 px-2 text-center w-14 sm:w-16">Sex</th>
+                                <th scope="col" class="py-3 px-2 text-center w-14 sm:w-16 bg-slate-200/50">Sáb</th>
+                                <th scope="col" class="py-3 px-2 text-center w-14 sm:w-16 bg-slate-200/50">Dom</th>
+                                <th scope="col" class="py-3 px-2 text-center w-16">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body" class="divide-y divide-slate-100">
+                            <!-- Conteúdo renderizado via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal Adicionar Colaborador -->
+    <div id="modal-add" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 class="font-bold text-slate-800 text-lg">Adicionar Colaborador</h3>
+                <button onclick="closeAddModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            
+            <form id="add-form" onsubmit="handleAddColaborador(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Nome do Colaborador</label>
+                    <input type="text" id="new-nome" required placeholder="Ex: João Silva" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-2">Escala Inicial (Marque os dias de FOLGA)</label>
+                    <div class="grid grid-cols-7 gap-1 text-center text-xs">
+                        <label class="cursor-pointer">
+                            <input type="checkbox" id="folga-0" class="peer hidden">
+                            <div class="p-2 border rounded peer-checked:bg-red-500 peer-checked:text-white peer-checked:border-red-600 border-slate-200 font-semibold">Seg</div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="checkbox" id="folga-1" class="peer hidden">
+                            <div class="p-2 border rounded peer-checked:bg-red-500 peer-checked:text-white peer-checked:border-red-600 border-slate-200 font-semibold">Ter</div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="checkbox" id="folga-2" class="peer hidden">
+                            <div class="p-2 border rounded peer-checked:bg-red-500 peer-checked:text-white peer-checked:border-red-600 border-slate-200 font-semibold">Qua</div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="checkbox" id="folga-3" class="peer hidden">
+                            <div class="p-2 border rounded peer-checked:bg-red-500 peer-checked:text-white peer-checked:border-red-600 border-slate-200 font-semibold">Qui</div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="checkbox" id="folga-4" class="peer hidden">
+                            <div class="p-2 border rounded peer-checked:bg-red-500 peer-checked:text-white peer-checked:border-red-600 border-slate-200 font-semibold">Sex</div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="checkbox" id="folga-5" class="peer hidden">
+                            <div class="p-2 border rounded peer-checked:bg-red-500 peer-checked:text-white peer-checked:border-red-600 border-slate-200 font-semibold">Sáb</div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="checkbox" id="folga-6" class="peer hidden">
+                            <div class="p-2 border rounded peer-checked:bg-red-500 peer-checked:text-white peer-checked:border-red-600 border-slate-200 font-semibold">Dom</div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeAddModal()" class="px-4 py-2 border border-slate-200 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-50">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">Salvar Colaborador</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Caixa de Notificação Personalizada (Toast) -->
+    <div id="toast" class="fixed bottom-4 right-4 bg-slate-900 text-white text-xs px-4 py-3 rounded-lg shadow-xl flex items-center gap-2 transform translate-y-20 opacity-0 transition-all duration-300 z-50">
+        <i class="fa-solid fa-circle-check text-emerald-400"></i>
+        <span id="toast-msg">Mensagem de aviso</span>
+    </div>
+
+    <script>
+        // Dados Iniciais do Template
+        const initialColaboradoresData = [
+            { id: 1, nome: "COLABORADOR 1", escala: ["T", "F", "T", "T", "T", "T", "T"] },
+            { id: 2, nome: "COLABORADOR 2", escala: ["T", "F", "F", "T", "T", "T", "T"] },
+            { id: 3, nome: "COLABORADOR 3", escala: ["T", "T", "F", "F", "T", "T", "T"] },
+            { id: 4, nome: "COLABORADOR 4", escala: ["T", "T", "T", "F", "F", "T", "T"] },
+            { id: 5, nome: "COLABORADOR 5", escala: ["T", "T", "T", "T", "F", "F", "T"] },
+            { id: 6, nome: "COLABORADOR 6", escala: ["F", "T", "T", "T", "T", "F", "T"] },
+            { id: 7, nome: "COLABORADOR 7", escala: ["F", "F", "T", "T", "T", "T", "T"] },
+            { id: 8, nome: "COLABORADOR 8", escala: ["T", "F", "F", "T", "T", "T", "T"] },
+            { id: 9, nome: "COLABORADOR 9", escala: ["T", "T", "F", "F", "T", "T", "T"] },
+            { id: 10, nome: "COLABORADOR 10", escala: ["T", "T", "T", "F", "F", "T", "T"] },
+            { id: 11, nome: "COLABORADOR 11", escala: ["T", "T", "T", "T", "F", "F", "T"] },
+            { id: 12, nome: "COLABORADOR 12", escala: ["F", "T", "T", "T", "T", "F", "T"] },
+            { id: 13, nome: "COLABORADOR 13", escala: ["F", "F", "T", "T", "T", "T", "T"] },
+            { id: 14, nome: "COLABORADOR 14", escala: ["T", "F", "F", "T", "T", "T", "T"] },
+            { id: 15, nome: "COLABORADOR 15", escala: ["T", "T", "F", "F", "T", "T", "T"] },
+            { id: 16, nome: "COLABORADOR 16", escala: ["T", "T", "T", "F", "F", "T", "T"] },
+            { id: 17, nome: "COLABORADOR 17", escala: ["T", "T", "T", "T", "F", "F", "T"] },
+            { id: 18, nome: "COLABORADOR 18", escala: ["F", "T", "T", "T", "T", "F", "T"] },
+            { id: 19, nome: "COLABORADOR 19", escala: ["F", "F", "T", "T", "T", "T", "T"] },
+            { id: 20, nome: "COLABORADOR 20", escala: ["T", "F", "F", "T", "T", "T", "T"] },
+            { id: 21, nome: "COLABORADOR 21", escala: ["T", "T", "F", "F", "T", "T", "T"] },
+            { id: 22, nome: "COLABORADOR 22", escala: ["T", "T", "T", "F", "F", "T", "T"] },
+            { id: 23, nome: "COLABORADOR 23", escala: ["T", "T", "T", "T", "F", "F", "T"] },
+            { id: 24, nome: "COLABORADOR 24", escala: ["T", "T", "T", "T", "T", "F", "F"] },
+            { id: 25, nome: "COLABORADOR 25", escala: ["T", "T", "T", "T", "F", "T", "F"] },
+            { id: 26, nome: "COLABORADOR 26", escala: ["T", "T", "T", "F", "T", "T", "F"] },
+            { id: 27, nome: "COLABORADOR 27", escala: ["T", "T", "F", "T", "T", "T", "F"] },
+            { id: 28, nome: "COLABORADOR 28", escala: ["T", "F", "T", "T", "T", "T", "F"] },
+            { id: 29, nome: "COLABORADOR 29", escala: ["F", "T", "T", "T", "T", "T", "F"] },
+            { id: 30, nome: "COLABORADOR 30", escala: ["T", "T", "F", "T", "T", "T", "F"] },
+            { id: 31, nome: "COLABORADOR 31", escala: ["T", "T", "T", "F", "T", "T", "F"] },
+            { id: 32, nome: "COLABORADOR 32", escala: ["F", "T", "T", "T", "T", "T", "F"] },
+            { id: 33, nome: "COLABORADOR 33", escala: ["T", "T", "T", "T", "T", "F", "F"] }
+        ];
+
+        // Estado da aplicação
+        let colaboradores = [];
+        const diasSemana = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"];
+
+        // Inicialização
+        window.onload = function() {
+            loadState();
+            updateDashboard();
+        };
+
+        // Carregar estado do LocalStorage ou dados padrão
+        function loadState() {
+            const savedData = localStorage.getItem('gestor_escalas_data');
+            if (savedData) {
+                try {
+                    colaboradores = JSON.parse(savedData);
+                } catch (e) {
+                    colaboradores = [...initialColaboradoresData];
+                }
+            } else {
+                colaboradores = [...initialColaboradoresData];
+            }
+        }
+
+        // Salvar estado
+        function saveState() {
+            localStorage.setItem('gestor_escalas_data', JSON.stringify(colaboradores));
+            updateDashboard();
+        }
+
+        // Navegação de Telas
+        function openApp() {
+            document.getElementById('welcome-screen').classList.remove('active');
+            document.getElementById('app-screen').classList.add('active');
+            renderTable();
+        }
+
+        function goHome() {
+            document.getElementById('app-screen').classList.remove('active');
+            document.getElementById('welcome-screen').classList.add('active');
+        }
+
+        // Renderização da Tabela de Escalas
+        function renderTable(dataToRender = null) {
+            const list = dataToRender || colaboradores;
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = '';
+
+            document.getElementById('counter-info').innerText = `Exibindo ${list.length} de ${colaboradores.length} colaboradores`;
+
+            if (list.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="10" class="py-8 text-center text-slate-400">
+                            <i class="fa-solid fa-user-slash text-2xl mb-2 block"></i>
+                            Nenhum colaborador encontrado com os filtros selecionados.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            list.forEach(colab => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50/80 transition-colors';
+                
+                let cellsHtml = `
+                    <td class="py-3 px-4 text-center font-mono text-xs text-slate-400 font-bold">#${colab.id}</td>
+                    <td class="py-3 px-4 font-medium text-slate-800">
+                        <div class="flex items-center gap-2">
+                            <span contenteditable="true" onblur="updateColabName(${colab.id}, this.innerText)" class="hover:bg-slate-100 px-1.5 py-0.5 rounded border border-transparent hover:border-slate-300 focus:bg-white focus:border-blue-400 focus:outline-none transition">
+                                ${colab.nome}
+                            </span>
+                        </div>
+                    </td>
+                `;
+
+                colab.escala.forEach((status, dayIndex) => {
+                    const isOff = status.trim() === 'F';
+                    const badgeClass = isOff ? 'badge-f' : 'badge-t';
+                    const text = isOff ? 'F' : 'T';
+                    const label = isOff ? 'Folga' : 'Trabalho';
+
+                    cellsHtml += `
+                        <td class="py-2 px-1 text-center align-middle">
+                            <button 
+                                onclick="toggleStatus(${colab.id}, ${dayIndex})" 
+                                title="${diasSemana[dayIndex]}: ${label} (Clique para alterar)"
+                                class="cell-interactive w-9 h-9 rounded-lg font-bold text-xs inline-flex items-center justify-center transition-all shadow-sm ${badgeClass}">
+                                ${text}
+                            </button>
+                        </td>
+                    `;
+                });
+
+                cellsHtml += `
+                    <td class="py-3 px-2 text-center">
+                        <button onclick="deleteColaborador(${colab.id})" title="Excluir Colaborador" class="text-slate-300 hover:text-red-500 p-1 rounded transition">
+                            <i class="fa-solid fa-trash-can text-sm"></i>
+                        </button>
+                    </td>
+                `;
+
+                tr.innerHTML = cellsHtml;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Alternar status do dia (T <-> F)
+        function toggleStatus(id, dayIndex) {
+            const colab = colaboradores.find(c => c.id === id);
+            if (colab) {
+                colab.escala[dayIndex] = colab.escala[dayIndex] === 'T' ? 'F' : 'T';
+                saveState();
+                filterTable(); // Re-renderiza respeitando filtros
+            }
+        }
+
+        // Atualizar Nome do Colaborador
+        function updateColabName(id, newName) {
+            const colab = colaboradores.find(c => c.id === id);
+            if (colab && newName.trim() !== '') {
+                colab.nome = newName.trim();
+                saveState();
+                showToast("Nome atualizado com sucesso!");
+            }
+        }
+
+        // Atualizar Métricas do Dashboard
+        function updateDashboard() {
+            const total = colaboradores.length;
+            const minMeta = Math.round(total * 0.20);
+            const maxMeta = Math.round(total * 0.286);
+
+            document.getElementById('total-colab').innerText = total;
+            document.getElementById('meta-min').innerText = minMeta;
+            document.getElementById('meta-max').innerText = maxMeta;
+
+            // Calcular folgas por dia
+            const folgasPorDia = [0, 0, 0, 0, 0, 0, 0];
+            colaboradores.forEach(c => {
+                c.escala.forEach((st, idx) => {
+                    if (st === 'F') folgasPorDia[idx]++;
+                });
+            });
+
+            // Média de folgas
+            const totalFolgas = folgasPorDia.reduce((a, b) => a + b, 0);
+            const media = total ? (totalFolgas / 7).toFixed(1) : "0.0";
+            document.getElementById('avg-folgas').innerText = media;
+
+            // Renderizar Resumo Diário
+            const summaryContainer = document.getElementById('daily-summary');
+            summaryContainer.innerHTML = '';
+
+            const shortDays = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
+            
+            folgasPorDia.forEach((count, idx) => {
+                const isWarning = count < minMeta || count > maxMeta;
+                const statusColor = isWarning ? 'text-amber-600 bg-amber-50 border-amber-200' : 'text-slate-700 bg-slate-50 border-slate-200';
+
+                const dayCard = document.createElement('div');
+                dayCard.className = `p-2 rounded-lg border text-center ${statusColor}`;
+                dayCard.innerHTML = `
+                    <div class="text-[10px] uppercase font-bold text-slate-400">${shortDays[idx]}</div>
+                    <div class="text-base font-extrabold mt-0.5">${count}</div>
+                    <div class="text-[9px] text-slate-400 font-medium">folgas</div>
+                `;
+                summaryContainer.appendChild(dayCard);
+            });
+        }
+
+        // Filtro Geral de Busca e Parâmetros
+        function filterTable() {
+            const query = document.getElementById('search-input').value.toLowerCase().trim();
+            const dayFilter = document.getElementById('day-filter').value;
+            const statusFilter = document.getElementById('status-filter').value;
+
+            const filtered = colaboradores.filter(colab => {
+                // Filtro de Nome ou ID
+                const matchesQuery = colab.nome.toLowerCase().includes(query) || colab.id.toString().includes(query);
+
+                // Filtro por dia da semana e status
+                let matchesStatus = true;
+                if (dayFilter !== 'all' && statusFilter !== 'all') {
+                    const dayIdx = parseInt(dayFilter);
+                    matchesStatus = colab.escala[dayIdx] === statusFilter;
+                }
+
+                return matchesQuery && matchesStatus;
+            });
+
+            renderTable(filtered);
+        }
+
+        // Modal para Adicionar Colaborador
+        function openAddModal() {
+            document.getElementById('modal-add').classList.remove('hidden');
+            document.getElementById('modal-add').classList.add('flex');
+        }
+
+        function closeAddModal() {
+            document.getElementById('modal-add').classList.add('hidden');
+            document.getElementById('modal-add').classList.remove('flex');
+            document.getElementById('add-form').reset();
+        }
+
+        function handleAddColaborador(e) {
+            e.preventDefault();
+            const nome = document.getElementById('new-nome').value.trim();
+            if (!nome) return;
+
+            const newId = colaboradores.length > 0 ? Math.max(...colaboradores.map(c => c.id)) + 1 : 1;
+            const escala = [];
+
+            for (let i = 0; i < 7; i++) {
+                const isFolga = document.getElementById(`folga-${i}`).checked;
+                escala.push(isFolga ? 'F' : 'T');
+            }
+
+            colaboradores.push({ id: newId, nome: nome.toUpperCase(), escala });
+            saveState();
+            filterTable();
+            closeAddModal();
+            showToast("Colaborador adicionado com sucesso!");
+        }
+
+        // Remover Colaborador
+        function deleteColaborador(id) {
+            if (confirm("Tem certeza que deseja remover este colaborador da escala?")) {
+                colaboradores = colaboradores.filter(c => c.id !== id);
+                saveState();
+                filterTable();
+                showToast("Colaborador removido.");
+            }
+        }
+
+        // Restaurar dados originais
+        function resetData() {
+            if (confirm("Deseja restaurar a escala original do sistema? Todas as alterações serão perdidas.")) {
+                colaboradores = JSON.parse(JSON.stringify(initialColaboradoresData));
+                saveState();
+                filterTable();
+                showToast("Escala restaurada para o padrão.");
+            }
+        }
+
+        // Exportar Escala para CSV
+        function exportToCSV() {
+            let csvContent = "data:text/csv;charset=utf-8,ID,Colaborador,Segunda,Terca,Quarta,Quinta,Sexta,Sabado,Domingo\n";
+
+            colaboradores.forEach(c => {
+                const row = [c.id, `"${c.nome}"`, ...c.escala].join(",");
+                csvContent += row + "\n";
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `escala_colaboradores_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast("Exportando arquivo CSV...");
+        }
+
+        // Exibir caixa de Toast
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
