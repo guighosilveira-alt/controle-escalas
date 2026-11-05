@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestor de Escalas - Inteligente 5x2</title>
+    <title>Gestor de Escalas - Inteligente 5x2 por Turno</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
         
         * {
             font-family: 'Inter', sans-serif;
@@ -32,27 +32,21 @@
         }
 
         .badge-t {
-            background-color: #dcfce7;
-            color: #15803d;
-            border: 1px solid #bbf7d0;
-        }
-
-        .badge-f {
-            background-color: #fee2e2;
-            color: #b91c1c;
-            border: 1px solid #fecaca;
+            background-color: #f1f5f9;
+            color: #475569;
+            border: 1px solid #e2e8f0;
         }
 
         .badge-holiday {
-            background-color: #fef3c7;
-            color: #b45309;
-            border: 1px solid #fde68a;
+            background-color: #fef3c7 !important;
+            color: #b45309 !important;
+            border: 1px solid #fde68a !important;
         }
 
         .cell-interactive {
             cursor: pointer;
             user-select: none;
-            transition: transform 0.1s ease, background-color 0.15s ease;
+            transition: transform 0.1s ease, background-color 0.15s ease, shadow 0.15s ease;
         }
 
         .cell-interactive:active {
@@ -89,11 +83,11 @@
             
             <h1 class="text-3xl font-extrabold tracking-tight mb-3">Gestor de Escalas</h1>
             <p class="text-slate-300 text-sm mb-8 leading-relaxed">
-                Seu módulo inteligente com suporte a dimensionamento de escalas.
+                Dimensionamento 5x2 avançado com gestão inteligente de folgas por horário de entrada.
             </p>
             
             <button id="btn-start" onclick="openApp()" class="w-full bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-semibold py-3.5 px-6 rounded-xl shadow-lg shadow-blue-600/30 transition duration-200 flex items-center justify-center gap-2 group">
-                <span>Acessar Painel</span>
+                <span>Acessar Painel Operacional</span>
                 <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
             </button>
 
@@ -111,26 +105,30 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
                 <div class="flex items-center gap-3">
                     <div class="bg-blue-600 p-2 rounded-lg text-white">
-                        <i class="fa-solid fa-users-gear text-lg"></i>
+                        <i class="fa-solid fa-clock text-lg"></i>
                     </div>
                     <div>
-                        <h2 class="font-bold text-base sm:text-lg leading-tight">Gestor de Escalas</h2>
-                        <span class="text-xs text-slate-400">Painel Operacional Avançado 5x2</span>
+                        <h2 class="font-bold text-base sm:text-lg leading-tight">Gestor de Escalas 5x2</h2>
+                        <span class="text-xs text-slate-400">Distribuição por Horário & Turnos</span>
                     </div>
                 </div>
 
                 <div class="flex items-center gap-2">
-                    <button onclick="openCalendarModal()" title="Ver Calendário Dinâmico e Feriados" class="bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition flex items-center gap-1.5">
+                    <button onclick="openManageHorariosModal()" title="Gerenciar Horários e Cores" class="bg-cyan-600/20 hover:bg-cyan-600/30 text-cyan-300 border border-cyan-500/30 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-clock text-xs"></i>
+                        <span class="hidden sm:inline">Horários</span>
+                    </button>
+                    <button onclick="openCalendarModal()" title="Ver Calendário Dinâmico" class="bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition flex items-center gap-1.5">
                         <i class="fa-solid fa-calendar-check text-xs"></i>
                         <span class="hidden sm:inline">Calendário</span>
                     </button>
-                    <button onclick="openHolidayModal()" title="Configurar Feriados na Semana" class="bg-amber-600/20 hover:bg-amber-600/30 text-amber-300 border border-amber-500/30 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition flex items-center gap-1.5">
+                    <button onclick="openHolidayModal()" title="Configurar Feriados" class="bg-amber-600/20 hover:bg-amber-600/30 text-amber-300 border border-amber-500/30 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition flex items-center gap-1.5">
                         <i class="fa-solid fa-umbrella-beach text-xs"></i>
                         <span class="hidden sm:inline">Feriados</span>
                     </button>
-                    <button onclick="exportToCSV()" title="Exportar para CSV" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition flex items-center gap-1.5">
+                    <button onclick="exportToCSV()" title="Exportar CSV" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition flex items-center gap-1.5">
                         <i class="fa-solid fa-download text-xs"></i>
-                        <span class="hidden sm:inline">Exportar</span>
+                        <span class="hidden sm:inline">CSV</span>
                     </button>
                     <button onclick="goHome()" class="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition flex items-center gap-1.5">
                         <i class="fa-solid fa-right-from-bracket text-xs"></i>
@@ -158,23 +156,23 @@
 
                 <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
                     <div class="flex items-center justify-between text-slate-500 text-xs font-semibold uppercase tracking-wider mb-2">
-                        <span>Meta Mín. Folgas</span>
+                        <span>Meta Global (20%-30%)</span>
                         <i class="fa-solid fa-chart-line text-amber-500 text-sm"></i>
                     </div>
                     <div class="flex items-baseline gap-2">
-                        <span id="meta-min" class="text-2xl sm:text-3xl font-extrabold text-slate-900">0</span>
-                        <span class="text-xs text-slate-500 font-medium">/dia (20%)</span>
+                        <span id="meta-min-max" class="text-xl sm:text-2xl font-extrabold text-slate-900">0 - 0</span>
+                        <span class="text-xs text-slate-500 font-medium">folgas/dia</span>
                     </div>
                 </div>
 
                 <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
                     <div class="flex items-center justify-between text-slate-500 text-xs font-semibold uppercase tracking-wider mb-2">
-                        <span>Meta Máx. Folgas</span>
-                        <i class="fa-solid fa-bullseye text-emerald-500 text-sm"></i>
+                        <span>Teto p/ Turno (1/5)</span>
+                        <i class="fa-solid fa-shield-halved text-emerald-500 text-sm"></i>
                     </div>
                     <div class="flex items-baseline gap-2">
-                        <span id="meta-max" class="text-2xl sm:text-3xl font-extrabold text-slate-900">0</span>
-                        <span class="text-xs text-slate-500 font-medium">/dia (30%)</span>
+                        <span id="teto-turno-info" class="text-xl sm:text-2xl font-extrabold text-emerald-600">20%</span>
+                        <span class="text-xs text-slate-400">máx por horário</span>
                     </div>
                 </div>
 
@@ -190,15 +188,31 @@
                 </div>
             </section>
 
+            <!-- Legenda de Horários e Turnos -->
+            <section class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2">
+                <div class="flex items-center justify-between">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
+                        <i class="fa-solid fa-palette text-blue-600"></i>
+                        <span>Horários de Entrada Cadastrados & Distribuição por Turno</span>
+                    </h4>
+                    <button onclick="openManageHorariosModal()" class="text-xs text-blue-600 hover:text-blue-800 font-semibold flex items-center gap-1">
+                        <i class="fa-solid fa-gear"></i> Gerenciar
+                    </button>
+                </div>
+                <div id="horarios-legend-bar" class="flex flex-wrap gap-2 pt-1">
+                    <!-- Renderizado via JS -->
+                </div>
+            </section>
+
             <!-- Resumo Diário de Folgas -->
             <section class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
                 <div class="flex items-center justify-between mb-3">
                     <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
                         <i class="fa-solid fa-chart-simple text-blue-600"></i>
-                        <span>Distribuição Diária de Folgas & Alertas de Dimensionamento (20% - 30%)</span>
+                        <span>Distribuição Diária de Folgas (Geral & Alertas de Turno)</span>
                     </h4>
                     <span id="holiday-alert-badge" class="hidden text-xs bg-amber-100 text-amber-800 font-semibold px-2.5 py-0.5 rounded border border-amber-300">
-                        <i class="fa-solid fa-triangle-exclamation mr-1"></i> Feriado Ativo nesta Semana
+                        <i class="fa-solid fa-triangle-exclamation mr-1"></i> Feriado Ativo
                     </span>
                 </div>
                 <div id="daily-summary" class="grid grid-cols-7 gap-1 sm:gap-2 text-center">
@@ -213,11 +227,16 @@
                     <!-- Campo de Busca -->
                     <div class="relative flex-grow max-w-md">
                         <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-                        <input type="text" id="search-input" onkeyup="filterTable()" placeholder="Buscar por colaborador ou ID..." class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                        <input type="text" id="search-input" onkeyup="filterTable()" placeholder="Buscar por colaborador, ID ou horário..." class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                     </div>
 
                     <!-- Filtros Rápidos -->
                     <div class="flex flex-wrap items-center gap-2">
+                        <select id="horario-filter" onchange="filterTable()" class="bg-slate-50 border border-slate-200 rounded-lg text-sm px-3 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+                            <option value="all">Todos os Horários</option>
+                            <!-- Preenchido via JS -->
+                        </select>
+
                         <select id="day-filter" onchange="filterTable()" class="bg-slate-50 border border-slate-200 rounded-lg text-sm px-3 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
                             <option value="all">Todos os Dias</option>
                             <option value="0">Segunda-feira</option>
@@ -231,8 +250,8 @@
 
                         <select id="status-filter" onchange="filterTable()" class="bg-slate-50 border border-slate-200 rounded-lg text-sm px-3 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
                             <option value="all">Todos Status</option>
-                            <option value="F">Possui Folga no Dia Selecionado</option>
-                            <option value="T">Trabalha no Dia Selecionado</option>
+                            <option value="F">Com Folga no Dia Selecionado</option>
+                            <option value="T">Trabalhando no Dia Selecionado</option>
                         </select>
 
                         <button onclick="openAddModal()" class="bg-blue-600 hover:bg-blue-700 text-white text-sm px-3 py-2 rounded-lg font-medium transition flex items-center gap-1.5">
@@ -249,7 +268,7 @@
 
                 <div class="flex items-center justify-between text-xs text-slate-500 pt-2 border-t border-slate-100">
                     <span id="counter-info">Exibindo 0 colaboradores</span>
-                    <span class="hidden sm:inline text-slate-400"><i class="fa-solid fa-circle-info mr-1"></i>Regra de Domingos: Folga obrigatória no 4º domingo consecutivo.</span>
+                    <span class="hidden sm:inline text-slate-400"><i class="fa-solid fa-shield-cat mr-1"></i>Regras: Máx 30% equipe global (evitado em 4ª/Sáb) | Máx 20% (1/5) por turno | 4º Domingo obrigatório folga.</span>
                 </div>
             </section>
 
@@ -259,8 +278,9 @@
                     <table id="escala-table" class="w-full text-sm text-left border-collapse">
                         <thead>
                             <tr class="bg-slate-100 text-slate-600 border-b border-slate-200 text-xs font-semibold uppercase tracking-wider">
-                                <th scope="col" class="py-3 px-4 text-center w-16">ID</th>
+                                <th scope="col" class="py-3 px-3 text-center w-12">ID</th>
                                 <th scope="col" class="py-3 px-4">Colaborador</th>
+                                <th scope="col" class="py-3 px-3 min-w-[130px]">Horário Entrada</th>
                                 <th scope="col" class="py-3 px-2 text-center w-14 sm:w-16">Seg</th>
                                 <th scope="col" class="py-3 px-2 text-center w-14 sm:w-16">Ter</th>
                                 <th scope="col" class="py-3 px-2 text-center w-14 sm:w-16">Qua</th>
@@ -268,7 +288,7 @@
                                 <th scope="col" class="py-3 px-2 text-center w-14 sm:w-16">Sex</th>
                                 <th scope="col" class="py-3 px-2 text-center w-14 sm:w-16 bg-slate-200/50">Sáb</th>
                                 <th scope="col" class="py-3 px-2 text-center w-14 sm:w-16 bg-slate-200/50">Dom</th>
-                                <th scope="col" class="py-3 px-2 text-center w-24">Ações</th>
+                                <th scope="col" class="py-3 px-2 text-center w-20">Ações</th>
                             </tr>
                         </thead>
                         <tbody id="table-body" class="divide-y divide-slate-100">
@@ -278,6 +298,36 @@
                 </div>
             </section>
         </main>
+    </div>
+
+    <!-- Modal Gerenciar Horários de Entrada -->
+    <div id="modal-horarios" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 class="font-bold text-slate-800 text-lg">Gerenciar Horários de Entrada</h3>
+                <button onclick="closeManageHorariosModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            
+            <p class="text-xs text-slate-500 leading-relaxed">
+                Adicione novos horários de entrada ou ajuste as cores associadas aos turnos existentes.
+            </p>
+
+            <form onsubmit="handleAddHorario(event)" class="flex gap-2">
+                <input type="text" id="new-horario-time" placeholder="Ex: 08:00 ou 14:30" required class="flex-grow px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <input type="color" id="new-horario-color" value="#0284c7" title="Escolha a cor do turno" class="h-10 w-12 rounded border border-slate-200 cursor-pointer p-1">
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-sm font-semibold transition">
+                    Adicionar
+                </button>
+            </form>
+
+            <div class="space-y-2 max-h-60 overflow-y-auto pt-2" id="horarios-edit-list">
+                <!-- Preenchido via JS -->
+            </div>
+
+            <div class="flex justify-end pt-2 border-t border-slate-100">
+                <button type="button" onclick="closeManageHorariosModal()" class="px-4 py-2 bg-slate-800 text-white rounded-lg text-sm font-medium hover:bg-slate-700">Fechar</button>
+            </div>
+        </div>
     </div>
 
     <!-- Modal Adicionar Colaborador -->
@@ -292,6 +342,13 @@
                 <div>
                     <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Nome do Colaborador</label>
                     <input type="text" id="new-nome" required placeholder="Ex: João Silva" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Horário de Entrada</label>
+                    <select id="new-horario-select" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <!-- Preenchido via JS -->
+                    </select>
                 </div>
 
                 <div>
@@ -417,40 +474,47 @@
     </div>
 
     <script>
+        // Configuração de Horários Padrão e Cores
+        let horariosConfig = [
+            { time: "11:00", color: "#2563eb", bg: "#dbeafe", border: "#bfdbfe", text: "#1e40af" }, // Blue
+            { time: "12:00", color: "#7c3aed", bg: "#ede9fe", border: "#ddd6fe", text: "#5b21b6" }, // Purple
+            { time: "13:00", color: "#059669", bg: "#d1fae5", border: "#a7f3d0", text: "#065f46" }  // Emerald
+        ];
+
         const initialColaboradoresData = [
-            { id: 1, nome: "COLABORADOR 1", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
-            { id: 2, nome: "COLABORADOR 2", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
-            { id: 3, nome: "COLABORADOR 3", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
-            { id: 4, nome: "COLABORADOR 4", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
-            { id: 5, nome: "COLABORADOR 5", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
-            { id: 6, nome: "COLABORADOR 6", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
-            { id: 7, nome: "COLABORADOR 7", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
-            { id: 8, nome: "COLABORADOR 8", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
-            { id: 9, nome: "COLABORADOR 9", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
-            { id: 10, nome: "COLABORADOR 10", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
-            { id: 11, nome: "COLABORADOR 11", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
-            { id: 12, nome: "COLABORADOR 12", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
-            { id: 13, nome: "COLABORADOR 13", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
-            { id: 14, nome: "COLABORADOR 14", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
-            { id: 15, nome: "COLABORADOR 15", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
-            { id: 16, nome: "COLABORADOR 16", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
-            { id: 17, nome: "COLABORADOR 17", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
-            { id: 18, nome: "COLABORADOR 18", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
-            { id: 19, nome: "COLABORADOR 19", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
-            { id: 20, nome: "COLABORADOR 20", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
-            { id: 21, nome: "COLABORADOR 21", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
-            { id: 22, nome: "COLABORADOR 22", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
-            { id: 23, nome: "COLABORADOR 23", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
-            { id: 24, nome: "COLABORADOR 24", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
-            { id: 25, nome: "COLABORADOR 25", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
-            { id: 26, nome: "COLABORADOR 26", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
-            { id: 27, nome: "COLABORADOR 27", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
-            { id: 28, nome: "COLABORADOR 28", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
-            { id: 29, nome: "COLABORADOR 29", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
-            { id: 30, nome: "COLABORADOR 30", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
-            { id: 31, nome: "COLABORADOR 31", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
-            { id: 32, nome: "COLABORADOR 32", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
-            { id: 33, nome: "COLABORADOR 33", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 }
+            { id: 1, nome: "COLABORADOR 1", horario: "11:00", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
+            { id: 2, nome: "COLABORADOR 2", horario: "11:00", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
+            { id: 3, nome: "COLABORADOR 3", horario: "11:00", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
+            { id: 4, nome: "COLABORADOR 4", horario: "11:00", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
+            { id: 5, nome: "COLABORADOR 5", horario: "11:00", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
+            { id: 6, nome: "COLABORADOR 6", horario: "11:00", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
+            { id: 7, nome: "COLABORADOR 7", horario: "11:00", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
+            { id: 8, nome: "COLABORADOR 8", horario: "11:00", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
+            { id: 9, nome: "COLABORADOR 9", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3, horario: "11:00" },
+            { id: 10, nome: "COLABORADOR 10", horario: "11:00", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
+            { id: 11, nome: "COLABORADOR 11", horario: "11:00", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
+            { id: 12, nome: "COLABORADOR 12", horario: "12:00", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
+            { id: 13, nome: "COLABORADOR 13", horario: "12:00", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
+            { id: 14, nome: "COLABORADOR 14", horario: "12:00", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
+            { id: 15, nome: "COLABORADOR 15", horario: "12:00", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
+            { id: 16, nome: "COLABORADOR 16", horario: "12:00", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
+            { id: 17, nome: "COLABORADOR 17", horario: "12:00", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
+            { id: 18, nome: "COLABORADOR 18", horario: "12:00", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
+            { id: 19, nome: "COLABORADOR 19", horario: "12:00", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
+            { id: 20, nome: "COLABORADOR 20", horario: "12:00", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
+            { id: 21, nome: "COLABORADOR 21", horario: "12:00", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
+            { id: 22, nome: "COLABORADOR 22", horario: "12:00", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
+            { id: 23, nome: "COLABORADOR 23", horario: "13:00", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
+            { id: 24, nome: "COLABORADOR 24", horario: "13:00", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
+            { id: 25, nome: "COLABORADOR 25", horario: "13:00", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
+            { id: 26, nome: "COLABORADOR 26", horario: "13:00", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
+            { id: 27, nome: "COLABORADOR 27", horario: "13:00", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
+            { id: 28, nome: "COLABORADOR 28", horario: "13:00", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
+            { id: 29, nome: "COLABORADOR 29", horario: "13:00", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
+            { id: 30, nome: "COLABORADOR 30", horario: "13:00", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
+            { id: 31, nome: "COLABORADOR 31", horario: "13:00", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
+            { id: 32, nome: "COLABORADOR 32", horario: "13:00", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 },
+            { id: 33, nome: "COLABORADOR 33", horario: "13:00", escala: ["T", "T", "T", "T", "T", "T", "T"], domingosConsecutivos: 3 }
         ];
 
         let colaboradores = [];
@@ -464,17 +528,33 @@
             loadState();
             populateYearSelect();
             renderHolidayCheckboxes();
+            renderHorariosFilterAndSelects();
+            renderHorariosLegendBar();
             updateDashboard();
         };
 
         function loadState() {
             const savedData = localStorage.getItem('gestor_escalas_data');
             const savedFeriados = localStorage.getItem('gestor_escalas_feriados');
+            const savedHorarios = localStorage.getItem('gestor_escalas_horarios_cfg');
+
+            if (savedHorarios) {
+                try { horariosConfig = JSON.parse(savedHorarios); } catch(e) {}
+            }
+
             if (savedData) {
-                try { colaboradores = JSON.parse(savedData); } catch (e) { colaboradores = JSON.parse(JSON.stringify(initialColaboradoresData)); }
+                try { 
+                    colaboradores = JSON.parse(savedData); 
+                    colaboradores.forEach(c => {
+                        if (!c.horario) c.horario = "11:00";
+                    });
+                } catch (e) { 
+                    colaboradores = JSON.parse(JSON.stringify(initialColaboradoresData)); 
+                }
             } else {
                 colaboradores = JSON.parse(JSON.stringify(initialColaboradoresData));
             }
+
             if (savedFeriados) {
                 try { feriadosSemana = JSON.parse(savedFeriados); } catch (e) { feriadosSemana = [false, false, false, false, false, false, false]; }
             }
@@ -483,7 +563,28 @@
         function saveState() {
             localStorage.setItem('gestor_escalas_data', JSON.stringify(colaboradores));
             localStorage.setItem('gestor_escalas_feriados', JSON.stringify(feriadosSemana));
+            localStorage.setItem('gestor_escalas_horarios_cfg', JSON.stringify(horariosConfig));
             updateDashboard();
+            renderHorariosLegendBar();
+        }
+
+        function getHorarioStyle(horarioStr) {
+            const cfg = horariosConfig.find(h => h.time === horarioStr);
+            if (cfg) {
+                return {
+                    bg: cfg.bg || '#dbeafe',
+                    border: cfg.border || '#bfdbfe',
+                    color: cfg.text || '#1e40af',
+                    dot: cfg.color || '#2563eb'
+                };
+            }
+            // Dynamic fallback for custom unmapped times
+            return {
+                bg: '#e0f2fe',
+                border: '#bae6fd',
+                color: '#0369a1',
+                dot: '#0284c7'
+            };
         }
 
         function openApp() {
@@ -500,9 +601,42 @@
         function populateYearSelect() {
             const yearSelect = document.getElementById('cal-year-select');
             yearSelect.innerHTML = '';
+            const currentYear = new Date().getFullYear();
             for (let y = 2025; y <= 2500; y++) {
-                yearSelect.innerHTML += `<option value="${y}" ${y === 2026 ? 'selected' : ''}>${y}</option>`;
+                yearSelect.innerHTML += `<option value="${y}" ${y === currentYear ? 'selected' : ''}>${y}</option>`;
             }
+        }
+
+        function renderHorariosFilterAndSelects() {
+            const filterSelect = document.getElementById('horario-filter');
+            const newSelect = document.getElementById('new-horario-select');
+
+            filterSelect.innerHTML = `<option value="all">Todos os Horários</option>`;
+            newSelect.innerHTML = ``;
+
+            horariosConfig.forEach(h => {
+                filterSelect.innerHTML += `<option value="${h.time}">${h.time}</option>`;
+                newSelect.innerHTML += `<option value="${h.time}">${h.time}</option>`;
+            });
+        }
+
+        function renderHorariosLegendBar() {
+            const bar = document.getElementById('horarios-legend-bar');
+            bar.innerHTML = '';
+
+            horariosConfig.forEach(h => {
+                const totalInHorario = colaboradores.filter(c => c.horario === h.time).length;
+                const maxTurnoOff = Math.floor(totalInHorario * 0.20);
+                const style = getHorarioStyle(h.time);
+
+                bar.innerHTML += `
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold border shadow-sm" style="background-color: ${style.bg}; border-color: ${style.border}; color: ${style.color};">
+                        <span class="w-2.5 h-2.5 rounded-full" style="background-color: ${style.dot};"></span>
+                        <span>${h.time}</span>
+                        <span class="text-[10px] opacity-75">(${totalInHorario} colab. | Máx off/dia: ${maxTurnoOff})</span>
+                    </div>
+                `;
+            });
         }
 
         function renderHolidayCheckboxes() {
@@ -562,6 +696,7 @@
                 "9-12": "Nossa Sra. Aparecida (Nacional)",
                 "10-2": "Finados (Nacional)",
                 "10-15": "Proclamação da República (Nacional)",
+                "10-20": "Dia da Consciência Negra (Estadual RS)",
                 "11-25": "Natal (Nacional)"
             };
 
@@ -596,6 +731,111 @@
             document.getElementById('modal-calendar').classList.remove('flex');
         }
 
+        // Modal de Gerenciamento de Horários
+        function openManageHorariosModal() {
+            renderHorariosEditList();
+            document.getElementById('modal-horarios').classList.remove('hidden');
+            document.getElementById('modal-horarios').classList.add('flex');
+        }
+
+        function closeManageHorariosModal() {
+            document.getElementById('modal-horarios').classList.add('hidden');
+            document.getElementById('modal-horarios').classList.remove('flex');
+        }
+
+        function renderHorariosEditList() {
+            const list = document.getElementById('horarios-edit-list');
+            list.innerHTML = '';
+
+            horariosConfig.forEach((h, idx) => {
+                list.innerHTML += `
+                    <div class="flex items-center justify-between p-2 rounded-lg bg-slate-50 border border-slate-200">
+                        <div class="flex items-center gap-2">
+                            <input type="color" value="${h.color}" onchange="updateHorarioColor(${idx}, this.value)" class="h-7 w-8 rounded border border-slate-200 cursor-pointer p-0.5">
+                            <span class="font-bold text-sm text-slate-800">${h.time}</span>
+                        </div>
+                        <button onclick="removeHorario(${idx})" class="text-xs text-red-500 hover:text-red-700 p-1"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                `;
+            });
+        }
+
+        function handleAddHorario(e) {
+            e.preventDefault();
+            const timeVal = document.getElementById('new-horario-time').value.trim();
+            const colorVal = document.getElementById('new-horario-color').value;
+
+            if (!timeVal) return;
+            if (horariosConfig.some(h => h.time === timeVal)) {
+                showToast("Este horário já existe!");
+                return;
+            }
+
+            // Converter cor HEX para tinting simples
+            const style = hexToStyle(colorVal);
+
+            horariosConfig.push({
+                time: timeVal,
+                color: colorVal,
+                bg: style.bg,
+                border: style.border,
+                text: style.text
+            });
+
+            saveState();
+            renderHorariosFilterAndSelects();
+            renderHorariosEditList();
+            renderTable();
+            document.getElementById('new-horario-time').value = '';
+            showToast(`Horário ${timeVal} adicionado!`);
+        }
+
+        function updateHorarioColor(idx, newColorHex) {
+            const style = hexToStyle(newColorHex);
+            horariosConfig[idx].color = newColorHex;
+            horariosConfig[idx].bg = style.bg;
+            horariosConfig[idx].border = style.border;
+            horariosConfig[idx].text = style.text;
+
+            saveState();
+            renderHorariosEditList();
+            renderTable();
+        }
+
+        function removeHorario(idx) {
+            const h = horariosConfig[idx];
+            if (colaboradores.some(c => c.horario === h.time)) {
+                if (!confirm(`Existem colaboradores atribuídos ao horário ${h.time}. Tem certeza? Os colaboradores serão mantidos com fallback visual.`)) {
+                    return;
+                }
+            }
+            horariosConfig.splice(idx, 1);
+            saveState();
+            renderHorariosFilterAndSelects();
+            renderHorariosEditList();
+            renderTable();
+            showToast("Horário removido.");
+        }
+
+        function hexToStyle(hex) {
+            // Conversão simplificada para gerar tons claros de fundo e escuros de texto
+            return {
+                bg: hex + '20', // ~12% opacidade
+                border: hex + '40', // ~25% opacidade
+                text: hex
+            };
+        }
+
+        function updateColabHorario(colabId, newHorario) {
+            const colab = colaboradores.find(c => c.id === colabId);
+            if (colab) {
+                colab.horario = newHorario;
+                saveState();
+                renderTable();
+                showToast(`Horário de ${colab.nome} alterado para ${newHorario}`);
+            }
+        }
+
         function renderTable(dataToRender = null) {
             const list = dataToRender || colaboradores;
             const tbody = document.getElementById('table-body');
@@ -606,7 +846,7 @@
             if (list.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="10" class="py-8 text-center text-slate-400">
+                        <td colspan="11" class="py-8 text-center text-slate-400">
                             <i class="fa-solid fa-user-slash text-2xl mb-2 block"></i>
                             Nenhum colaborador encontrado com os filtros selecionados.
                         </td>
@@ -617,16 +857,34 @@
 
             list.forEach(colab => {
                 const tr = document.createElement('tr');
-                tr.className = 'hover:bg-slate-50/80 transition-colors';
+                tr.className = 'hover:bg-slate-50/80 transition-colors border-b border-slate-100';
                 
+                const hStyle = getHorarioStyle(colab.horario);
+
+                // Montar Select de Horário diretamente na tabela
+                let horarioOptions = '';
+                horariosConfig.forEach(h => {
+                    const selected = h.time === colab.horario ? 'selected' : '';
+                    horarioOptions += `<option value="${h.time}" ${selected}>${h.time}</option>`;
+                });
+                if (!horariosConfig.some(h => h.time === colab.horario)) {
+                    horarioOptions += `<option value="${colab.horario}" selected>${colab.horario}</option>`;
+                }
+
                 let cellsHtml = `
-                    <td class="py-3 px-4 text-center font-mono text-xs text-slate-400 font-bold">#${colab.id}</td>
+                    <td class="py-3 px-3 text-center font-mono text-xs text-slate-400 font-bold">#${colab.id}</td>
                     <td class="py-3 px-4 font-medium text-slate-800">
                         <div class="flex items-center gap-2">
                             <span contenteditable="true" onblur="updateColabName(${colab.id}, this.innerText)" class="hover:bg-slate-100 px-1.5 py-0.5 rounded border border-transparent hover:border-slate-300 focus:bg-white focus:border-blue-400 focus:outline-none transition">
                                 ${colab.nome}
                             </span>
+                            ${colab.domingosConsecutivos >= 3 ? '<span class="text-rose-500 font-bold text-[10px]" title="Atenção: 4º domingo consecutivo! Folga obrigatória exigida.">⚠️ 4º Dom</span>' : ''}
                         </div>
+                    </td>
+                    <td class="py-3 px-3">
+                        <select onchange="updateColabHorario(${colab.id}, this.value)" class="text-xs font-bold px-2 py-1 rounded-md border focus:outline-none transition cursor-pointer" style="background-color: ${hStyle.bg}; border-color: ${hStyle.border}; color: ${hStyle.color};">
+                            ${horarioOptions}
+                        </select>
                     </td>
                 `;
 
@@ -634,18 +892,27 @@
                     const isOff = status.trim() === 'F';
                     const isHoliday = feriadosSemana[dayIndex];
                     
-                    let badgeClass = isOff ? 'badge-f' : 'badge-t';
-                    if (isHoliday && isOff) badgeClass = 'badge-holiday';
+                    let cellStyle = `background-color: #f1f5f9; color: #475569; border: 1px solid #e2e8f0;`;
+                    
+                    if (isOff) {
+                        // Aplica estilo com a cor correspondente ao HORÁRIO do colaborador
+                        cellStyle = `background-color: ${hStyle.bg}; color: ${hStyle.color}; border: 1px solid ${hStyle.border}; font-weight: 800;`;
+                    }
+
+                    if (isHoliday && isOff) {
+                        cellStyle = `background-color: #fef3c7; color: #b45309; border: 1px solid #fde68a; font-weight: 800;`;
+                    }
                     
                     const text = isOff ? 'F' : 'T';
-                    const label = isOff ? (isHoliday ? 'Folga (Feriado)' : 'Folga') : (isHoliday ? 'Trabalho em Feriado' : 'Trabalho');
+                    const label = isOff ? (isHoliday ? 'Folga (Feriado)' : `Folga (${colab.horario})`) : (isHoliday ? 'Trabalho em Feriado' : 'Trabalho');
 
                     cellsHtml += `
                         <td class="py-2 px-1 text-center align-middle relative">
                             <button 
                                 onclick="toggleStatus(${colab.id}, ${dayIndex})" 
-                                title="${diasSemana[dayIndex]} ${isHoliday ? '[FERIADO]' : ''}: ${label} (Clique para alterar)"
-                                class="cell-interactive w-9 h-9 rounded-lg font-bold text-xs inline-flex items-center justify-center transition-all shadow-sm ${badgeClass}">
+                                title="${diasSemana[dayIndex]} ${isHoliday ? '[FERIADO]' : ''}: ${label} (Horário Entrada: ${colab.horario})"
+                                style="${cellStyle}"
+                                class="cell-interactive w-9 h-9 rounded-lg font-bold text-xs inline-flex items-center justify-center transition-all shadow-sm">
                                 ${text}
                             </button>
                             ${isHoliday && !isOff ? '<span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-amber-500" title="Dia de Feriado"></span>' : ''}
@@ -669,7 +936,7 @@
             });
         }
 
-        // REGRA DE FOLGA OBRIGATÓRIA NO 4º DOMINGO
+        // REGRA DE FOLGA OBRIGATÓRIA NO 4º DOMINGO & REGRAS DE TURNO
         function toggleStatus(id, dayIndex) {
             const colab = colaboradores.find(c => c.id === id);
             if (!colab) return;
@@ -680,13 +947,12 @@
 
             // Se for domingo (índice 6)
             if (dayIndex === 6) {
-                // Se atingiu 3 domingos consecutivos e houver tentativa de lançamento/manutenção em T
-                if (colab.domingosConsecutivos >=3) {
+                if (colab.domingosConsecutivos >= 3 && oldStatus === 'T') {
                     colab.escala[6] = 'F';
                     colab.domingosConsecutivos = 0;
                     saveState();
                     filterTable();
-                    showToast("Atenção! Limite de domingos consecutivos trabalhados não pode exceder 3. Refaça o lançamento.");
+                    showToast("Atenção! Limite de domingos consecutivos trabalhados não pode exceder 3. Folga aplicada.");
                     return;
                 }
             }
@@ -707,16 +973,17 @@
 
             const totalFolgasColab = colab.escala.filter(s => s === 'F').length;
 
-            // Ao lançar a 1ª folga semanal (dias de semana)
+            // Lançou a 1ª folga semanal (dias de semana)
             if (newStatus === 'F' && totalFolgasColab === 1 && dayIndex !== 6) {
                 if (colab.escala[6] === 'T') {
                     colab.domingosConsecutivos = Math.min(3, colab.domingosConsecutivos + 1);
                 }
 
+                // Sugestão Inteligente levando em conta regras de Turno (1/5) e Quarta/Sábado
                 const suggestedDay = findBestSmartDayForSecondOff(colab.id, dayIndex);
                 if (suggestedDay !== null && suggestedDay !== dayIndex) {
                     pendingSuggestion = { colabId: colab.id, dayIndex: suggestedDay };
-                    showSuggestionModal(`O colaborador ${colab.nome} recebeu sua 1ª folga na ${diasSemana[dayIndex]}. Para cumprir a regra 5x2 mantendo o dimensionamento de folgas entre 20% e 30%, sugerimos lançar a 2ª folga na <b>${diasSemana[suggestedDay]}</b>.`);
+                    showSuggestionModal(`O colaborador ${colab.nome} (${colab.horario}) recebeu a 1ª folga na ${diasSemana[dayIndex]}. Para cumprir a regra 5x2 respeitando o teto de <b>1/5 por turno</b> e evitando 30% em 4ª/Sáb, sugerimos a 2ª folga na <b>${diasSemana[suggestedDay]}</b>.`);
                 }
             }
 
@@ -734,30 +1001,59 @@
             }
         }
 
+        // ALGORITMO DE SUGESTÃO INTELIGENTE DE FOLGA POR TURNO & REGRAS GERAIS
         function findBestSmartDayForSecondOff(colabId, firstOffDay) {
+            const colab = colaboradores.find(c => c.id === colabId);
             const totalColab = colaboradores.length;
-            const minFolgas = Math.ceil(totalColab * 0.20);
-            const maxFolgas = Math.floor(totalColab * 0.30);
+            const maxFolgasGeral = Math.floor(totalColab * 0.30);
 
-            const folgasPorDia = [0,0,0,0,0,0,0];
+            // Colaboradores no mesmo horário
+            const sameTurnoColabs = colaboradores.filter(c => c.horario === colab.horario);
+            const totalTurno = sameTurnoColabs.length;
+            const maxFolgasTurno = Math.floor(totalTurno * 0.20); // 1/5 do grupo do turno
+
+            // Mapear folgas diárias globais e folgas por turno
+            const folgasPorDiaGeral = [0,0,0,0,0,0,0];
+            const folgasPorDiaTurno = [0,0,0,0,0,0,0];
+
             colaboradores.forEach(c => {
                 if (c.id !== colabId) {
-                    c.escala.forEach((st, idx) => { if (st === 'F') folgasPorDia[idx]++; });
+                    c.escala.forEach((st, idx) => {
+                        if (st === 'F') {
+                            folgasPorDiaGeral[idx]++;
+                            if (c.horario === colab.horario) {
+                                folgasPorDiaTurno[idx]++;
+                            }
+                        }
+                    });
                 }
             });
 
             let candidates = [];
             for (let i = 0; i < 7; i++) {
                 if (i === firstOffDay) continue;
-                const colabHasOff = colaboradores.find(c => c.id === colabId).escala[i] === 'F';
-                if (colabHasOff) continue;
+                if (colab.escala[i] === 'F') continue;
 
-                const projectedFolgas = folgasPorDia[i] + 1;
-                if (projectedFolgas <= maxFolgas) {
-                    candidates.push({ day: i, count: folgasPorDia[i], isWeekend: (i === 5 || i === 6) });
+                const projGeral = folgasPorDiaGeral[i] + 1;
+                const projTurno = folgasPorDiaTurno[i] + 1;
+
+                // Regra Quarta (2) e Sábado (5): Evita percentual máximo (30%)
+                const isQuaOrSab = (i === 2 || i === 5);
+                const limitGeralDia = isQuaOrSab ? Math.max(1, maxFolgasGeral - 1) : maxFolgasGeral;
+
+                // Validar se respeita teto global E teto do turno (1/5)
+                if (projGeral <= limitGeralDia && projTurno <= Math.max(1, maxFolgasTurno)) {
+                    candidates.push({
+                        day: i,
+                        countGeral: folgasPorDiaGeral[i],
+                        countTurno: folgasPorDiaTurno[i],
+                        isWeekend: (i === 5 || i === 6),
+                        isQuaOrSab
+                    });
                 }
             }
 
+            // Fallback se restrições forem severas
             if (candidates.length === 0) {
                 for (let i = 0; i < 7; i++) {
                     if (i !== firstOffDay && !feriadosSemana[i]) return i;
@@ -765,10 +1061,12 @@
                 return (firstOffDay + 3) % 7;
             }
 
+            // Ordena candidatos: Menor concorrência no turno -> Fins de semana -> Menor concorrência geral
             candidates.sort((a, b) => {
+                if (a.countTurno !== b.countTurno) return a.countTurno - b.countTurno;
                 if (a.isWeekend && !b.isWeekend) return -1;
                 if (!a.isWeekend && b.isWeekend) return 1;
-                return a.count - b.count;
+                return a.countGeral - b.countGeral;
             });
 
             return candidates[0].day;
@@ -810,12 +1108,11 @@
 
         function updateDashboard() {
             const total = colaboradores.length;
-            const minMeta = Math.round(total * 0.20);
-            const maxMeta = Math.round(total * 0.30);
+            const minMeta = Math.ceil(total * 0.20);
+            const maxMeta = Math.floor(total * 0.30);
 
             document.getElementById('total-colab').innerText = total;
-            document.getElementById('meta-min').innerText = minMeta;
-            document.getElementById('meta-max').innerText = maxMeta;
+            document.getElementById('meta-min-max').innerText = `${minMeta} - ${maxMeta}`;
 
             const folgasPorDia = [0, 0, 0, 0, 0, 0, 0];
             colaboradores.forEach(c => {
@@ -839,26 +1136,40 @@
             folgasPorDia.forEach((count, idx) => {
                 const isBelowMin = count < minMeta;
                 const isAboveMax = count > maxMeta;
-                const isWarning = isBelowMin || isAboveMax;
+                const isQuaOrSab = (idx === 2 || idx === 5);
+                const isWarning = isBelowMin || isAboveMax || (isQuaOrSab && count === maxMeta);
                 const isHoliday = feriadosSemana[idx];
+
+                // Calcular detalhamento de folgas por turno no dia
+                let turnoBreakdownText = [];
+                horariosConfig.forEach(h => {
+                    const totalTurno = colaboradores.filter(c => c.horario === h.time).length;
+                    const countTurnoOff = colaboradores.filter(c => c.horario === h.time && c.escala[idx] === 'F').length;
+                    const maxTurnoOff = Math.floor(totalTurno * 0.20);
+                    const isTurnoExceeded = countTurnoOff > maxTurnoOff && totalTurno > 0;
+                    turnoBreakdownText.push(`${h.time}: ${countTurnoOff}/${totalTurno} ${isTurnoExceeded ? '⚠️' : ''}`);
+                });
 
                 let statusColor = 'text-slate-700 bg-slate-50 border-slate-200';
                 if (isWarning) statusColor = 'text-amber-700 bg-amber-50 border-amber-300';
                 if (isHoliday) statusColor += ' ring-2 ring-amber-400';
 
                 const dayCard = document.createElement('div');
-                dayCard.className = `p-2 rounded-lg border text-center ${statusColor} relative`;
+                dayCard.className = `p-2 rounded-lg border text-center ${statusColor} relative group cursor-help`;
+                dayCard.title = `Detalhamento por Turno (${diasSemana[idx]}):\n` + turnoBreakdownText.join('\n');
+                
                 dayCard.innerHTML = `
                     ${isHoliday ? '<span class="absolute -top-2 left-1/2 -translate-x-1/2 bg-amber-500 text-white text-[8px] font-bold px-1 rounded">FERIADO</span>' : ''}
                     <div class="text-[10px] uppercase font-bold text-slate-400 mt-0.5">${shortDays[idx]}</div>
                     <div class="text-base font-extrabold mt-0.5">${count}</div>
-                    <div class="text-[9px] ${isWarning ? 'text-amber-600 font-bold' : 'text-slate-400'}">${isBelowMin ? 'Abaixo 20%' : (isAboveMax ? 'Acima 30%' : 'Ideal')}</div>
+                    <div class="text-[9px] ${isWarning ? 'text-amber-600 font-bold' : 'text-slate-400'}">${isBelowMin ? 'Abaixo 20%' : (isAboveMax ? 'Acima 30%' : (isQuaOrSab && count === maxMeta ? 'Atenção 4ª/Sáb' : 'Ideal'))}</div>
                 `;
                 summaryContainer.appendChild(dayCard);
             });
         }
 
         function openAddModal() {
+            renderHorariosFilterAndSelects();
             document.getElementById('modal-add').classList.remove('hidden');
             document.getElementById('modal-add').classList.add('flex');
         }
@@ -872,6 +1183,7 @@
         function handleAddColaborador(e) {
             e.preventDefault();
             const nome = document.getElementById('new-nome').value.trim();
+            const horario = document.getElementById('new-horario-select').value;
             if (!nome) return;
 
             const newId = colaboradores.length > 0 ? Math.max(...colaboradores.map(c => c.id)) + 1 : 1;
@@ -882,7 +1194,14 @@
                 escala.push(isFolga ? 'F' : 'T');
             }
 
-            colaboradores.push({ id: newId, nome: nome.toUpperCase(), escala, domingosConsecutivos: 0 });
+            colaboradores.push({ 
+                id: newId, 
+                nome: nome.toUpperCase(), 
+                horario: horario, 
+                escala, 
+                domingosConsecutivos: 0 
+            });
+
             saveState();
             filterTable();
             closeAddModal();
@@ -908,7 +1227,7 @@
         }
 
         function resetData() {
-            if (confirm("Deseja redefinir todas as colunas da semana para Trabalho (T) e resetar as travas de domingos? Os nomes dos colaboradores cadastrados serão mantidos.")) {
+            if (confirm("Deseja redefinir todas as colunas da semana para Trabalho (T) e resetar as travas de domingos? Os nomes e horários cadastrados serão mantidos.")) {
                 colaboradores.forEach(c => {
                     c.escala = ["T", "T", "T", "T", "T", "T", "T"];
                     c.domingosConsecutivos = 0;
@@ -923,26 +1242,35 @@
 
         function filterTable() {
             const query = document.getElementById('search-input').value.toLowerCase().trim();
+            const horarioFilter = document.getElementById('horario-filter').value;
             const dayFilter = document.getElementById('day-filter').value;
             const statusFilter = document.getElementById('status-filter').value;
 
             const filtered = colaboradores.filter(colab => {
-                const matchesQuery = colab.nome.toLowerCase().includes(query) || colab.id.toString().includes(query);
+                const matchesQuery = colab.nome.toLowerCase().includes(query) || 
+                                     colab.id.toString().includes(query) || 
+                                     colab.horario.toLowerCase().includes(query);
+                
+                const matchesHorario = horarioFilter === 'all' || colab.horario === horarioFilter;
+
                 let matchesStatus = true;
                 if (dayFilter !== 'all' && statusFilter !== 'all') {
                     const dayIdx = parseInt(dayFilter);
                     matchesStatus = colab.escala[dayIdx] === statusFilter;
+                } else if (statusFilter !== 'all') {
+                    matchesStatus = colab.escala.includes(statusFilter);
                 }
-                return matchesQuery && matchesStatus;
+
+                return matchesQuery && matchesHorario && matchesStatus;
             });
 
             renderTable(filtered);
         }
 
         function exportToCSV() {
-            let csvContent = "\uFEFFID;Colaborador;Segunda;Terca;Quarta;Quinta;Sexta;Sabado;Domingo\n";
+            let csvContent = "\uFEFFID;Colaborador;Horario Entrada;Segunda;Terca;Quarta;Quinta;Sexta;Sabado;Domingo\n";
             colaboradores.forEach(c => {
-                const row = [c.id, `"${c.nome}"`, ...c.escala].join(";");
+                const row = [c.id, `"${c.nome}"`, `"${c.horario}"`, ...c.escala].join(";");
                 csvContent += row + "\n";
             });
 
